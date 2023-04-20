@@ -1,11 +1,8 @@
 import logging
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
-
-
-def open_file(filepath):
-    with open(filepath, 'r', encoding='utf-8') as infile:
-        return infile.read()
+from generate_response import generate_response
+from utils import open_file
 
 
 telegram_token = open_file('telegramtoken.txt')
@@ -14,11 +11,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-
-
-def generate_response(message):
-    # Your response-generating code here
-    return "This is a response to your message: " + message
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
