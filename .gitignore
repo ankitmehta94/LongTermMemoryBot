@@ -1,2 +1,7 @@
 openaiapikey.txt
+telegramtoken.txt
 env
+gpt3_logs
+internal_notes
+nexus
+__pycache__
