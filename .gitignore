@@ -5,3 +5,5 @@ gpt3_logs
 internal_notes
 nexus
 __pycache__
+vector_db
+.vscode

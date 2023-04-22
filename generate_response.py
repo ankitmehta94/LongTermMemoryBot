@@ -1,5 +1,6 @@
-from chat import gpt3_embedding, load_convo, fetch_memories, summarize_memories, get_last_messages, gpt3_completion
+from chat import gpt3_embedding, load_convo, fetch_memories, get_last_messages, gpt3_completion
 from utils import timestamp_to_datetime, save_json, open_file
+from chroma_utils import summarize_memories
 from time import time
 from uuid import uuid4
 

@@ -8,6 +8,10 @@ def open_file(filepath):
         return infile.read()
 
 
+def json_stringyfy(payload):
+    return json.dumps(payload, separators=(',', ':'))
+
+
 def save_file(filepath, content):
     with open(filepath, 'w', encoding='utf-8') as outfile:
         outfile.write(content)

@@ -1,0 +1,5 @@
+{
+  "notes_collection": "notes",
+  "logs_collection": "logs",
+  "vector_database_directory": "./vector_db"
+}
