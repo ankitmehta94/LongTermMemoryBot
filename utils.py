@@ -12,6 +12,10 @@ def json_stringyfy(payload):
     return json.dumps(payload, separators=(',', ':'))
 
 
+def json_pretty_print(payload):
+    return json.dumps(payload, indent=2)
+
+
 def save_file(filepath, content):
     with open(filepath, 'w', encoding='utf-8') as outfile:
         outfile.write(content)
