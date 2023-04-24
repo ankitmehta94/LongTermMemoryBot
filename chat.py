@@ -8,7 +8,7 @@ from time import time, sleep
 from uuid import uuid4
 
 
-openai.api_key = load_json('./env_constants.json')['OPEN_AI_SECRET_KEY']
+openai.api_key = os.environ.get('OPEN_AI_SECRET_KEY')
 
 
 def gpt3_embedding(content, engine='text-embedding-ada-002'):

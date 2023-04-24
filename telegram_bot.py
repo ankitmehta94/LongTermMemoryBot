@@ -3,13 +3,12 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from generate_response import generate_response
 from aws_utils import upload_to_s3, transcribe_audio
-from utils import load_json, create_directory
+from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message
+import os
 
-aws_constants = load_json('./aws_constants.json')
-telegram_token = load_json('./env_constants.json')['TERLRGRAM_BOT_TOKEN']
-
-bucket_name = aws_constants['bucket_name']
+telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+bucket_name = "fast-telegram-bot-files"
 
 
 logging.basicConfig(
@@ -38,8 +37,8 @@ async def voice_downloader(update, context):
     file_id = update.message.voice.file_id
     user_id = update.message.from_user.id
     file = await context.bot.get_file(file_id)
-    user_folder = 'voice_notes/{user_id}'.format(
-        user_id=user_id)
+    user_folder = '{root_dir}/voice_notes/{user_id}'.format(
+        user_id=user_id, root_dir=root_dir)
     create_directory(user_folder)
     file_path = '{user_folder}/{file_id}.ogg'.format(
         file_id=file_id, user_folder=user_folder)

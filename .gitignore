@@ -8,5 +8,4 @@ __pycache__
 vector_db
 .vscode
 voice_notes
-env_constants.json
-aws_constants.json
+.env

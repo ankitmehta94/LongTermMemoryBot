@@ -3,6 +3,13 @@ import json
 import datetime
 import os
 import requests
+from os.path import dirname, join
+from dotenv.main import load_dotenv
+
+load_dotenv()
+project_root = dirname(dirname(__file__))
+
+root_dir = join(project_root, 'LongTermMemoryBot')
 
 
 def open_file(filepath):

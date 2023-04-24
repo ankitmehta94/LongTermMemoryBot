@@ -1,5 +1,5 @@
 import chromadb
-from utils import load_json, open_file, json_stringyfy, timestamp_to_datetime
+from utils import root_dir, open_file, json_stringyfy, timestamp_to_datetime
 from chromadb.config import Settings
 from chromadb.utils import embedding_functions
 from chat import gpt3_completion
@@ -7,8 +7,14 @@ from sentence_transformers import SentenceTransformer
 from uuid import uuid4
 from time import time
 import os
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-collection_json = load_json('vector_db_constants.json')
+
+collection_json = {
+    "notes_collection": "notes",
+    "logs_collection": "logs",
+    "vector_database_directory": "{root_dir}/vector_db".format(root_dir=root_dir)
+}
 
 chroma_client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet",
                                          persist_directory=collection_json["vector_database_directory"]))

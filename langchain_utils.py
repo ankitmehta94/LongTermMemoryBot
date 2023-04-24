@@ -1,20 +1,12 @@
 from langchain.chat_models import ChatOpenAI
-from langchain import PromptTemplate, LLMChain
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
 from langchain.schema import (
-    AIMessage,
     HumanMessage,
     SystemMessage
 )
-from utils import load_json
+import os
 
 chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0,
-                  openai_api_key=load_json('./env_constants.json')['OPEN_AI_SECRET_KEY'])
+                  openai_api_key=os.environ.get('OPEN_AI_SECRET_KEY'))
 
 
 disfluency_and_grammaar_fix_system_message = SystemMessage(
