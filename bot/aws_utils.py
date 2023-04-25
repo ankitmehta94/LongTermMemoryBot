@@ -8,7 +8,7 @@ import os
 session = boto3.Session(
     aws_access_key_id=os.environ.get('AWS_ACCESS_ID'),
     aws_secret_access_key=os.environ.get('AWS_SECRET_KEY'),
-    # region_name=aws_config['AWS_SECRET_KEY']
+    region_name=os.environ.get('AWS_REGION')
 )
 
 

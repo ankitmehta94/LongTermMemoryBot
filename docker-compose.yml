@@ -8,6 +8,7 @@ services:
       AWS_SECRET_KEY: "${AWS_SECRET_KEY}"
       AWS_ACCESS_ID: "${AWS_ACCESS_ID}"
       OPEN_AI_SECRET_KEY: "${OPEN_AI_SECRET_KEY}"
+      AWS_REGION: "${AWS_REGION}"
       TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
       DB_NAME: "postgres"
       POSTGRES_USER: "postgres"

@@ -5,7 +5,7 @@ from generate_response import generate_response
 from aws_utils import upload_to_s3, transcribe_audio
 from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message
-from db_connections import add_transcription
+from db_connections import add_transcription, get_transcription
 import os
 
 telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN')
@@ -25,8 +25,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # CallbackQueries need to be answered, even if no notification to the user is needed
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     await query.answer()
-
-    await query.edit_message_text(text=f"Selected option: {query.data}")
+    callback_data_array = query.data.split(":")
+    transcription = get_transcription(callback_data_array[1])
+    await query.edit_message_text(text=transcription)
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -48,15 +49,18 @@ async def voice_downloader(update, context):
 
 
 async def recieve_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # file_path = await voice_downloader(update, context)
-    # upload_to_s3(bucket_name=bucket_name, file_path=file_path,
-    #              local_file_path=file_path)
-    # transcription = transcribe_audio(
-    #     bucket_name=bucket_name, file_name=file_path)
+    file_path = await voice_downloader(update, context)
+    upload_to_s3(bucket_name=bucket_name, file_path=file_path,
+                 local_file_path=file_path)
+    transcription = transcribe_audio(
+        bucket_name=bucket_name, file_name=file_path)
+    user_id = update.message.from_user.id
+    t_id = add_transcription(user_id=user_id, transcription=transcription)
+    print(t_id)
     keyboard = [
-        [InlineKeyboardButton("Journal", callback_data="Journal"),
+        [InlineKeyboardButton("Journal", callback_data="Journal:{t_id}".format(t_id=t_id)),
          InlineKeyboardButton("Create Todo List",
-                              callback_data="Create Todo List "),
+                              callback_data="Create Todo List:{t_id}".format(t_id=t_id)),
          ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
