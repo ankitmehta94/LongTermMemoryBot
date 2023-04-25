@@ -5,6 +5,7 @@ from generate_response import generate_response
 from aws_utils import upload_to_s3, transcribe_audio
 from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message
+from db_connections import add_transcription
 import os
 
 telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN')
