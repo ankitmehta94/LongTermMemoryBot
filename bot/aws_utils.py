@@ -12,6 +12,38 @@ session = boto3.Session(
 )
 
 
+def connect_to_dynamo_table(table_name):
+    """
+    Connect to a DynamoDB table and return the table object
+    """
+    dynamodb = session.resource('dynamodb')
+    table = dynamodb.Table(table_name)
+    return table
+
+
+transcription_table = connect_to_dynamo_table('Transcriptions')
+
+
+def add_transcript(transcript_id, transcript_text, user_id):
+    """
+    Add a transcript to a DynamoDB table
+    """
+    transcription_table.put_item(
+        Item={'id': transcript_id, 'transcript': transcript_text, 'user_id': user_id})
+
+
+def get_transcript(transcript_id):
+    """
+    Get a transcript from a DynamoDB table using an id
+    """
+    response = transcription_table.get_item(Key={'id': transcript_id})
+    transcript = response.get('Item', None)
+    if transcript:
+        return transcript.get('transcript')
+    else:
+        return None
+
+
 def upload_to_s3(bucket_name, file_path, local_file_path):
     """
     Upload a file to an S3 bucket

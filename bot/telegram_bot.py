@@ -2,11 +2,11 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from generate_response import generate_response
-from aws_utils import upload_to_s3, transcribe_audio
+from aws_utils import upload_to_s3, transcribe_audio, get_transcript, add_transcript
 from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message
-from db_connections import add_transcription, get_transcription
 import os
+from uuid import uuid4
 
 telegram_token = os.environ.get('TELEGRAM_BOT_TOKEN')
 bucket_name = "fast-telegram-bot-files"
@@ -26,8 +26,11 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     await query.answer()
     callback_data_array = query.data.split(":")
-    transcription = get_transcription(callback_data_array[1])
-    await query.edit_message_text(text=transcription)
+    transcription = get_transcript(transcript_id=callback_data_array[1])
+    response = 'You did not journal'
+    if callback_data_array[0] == "Journal":
+        response = get_fixed_message(transcription)
+    await query.edit_message_text(text=response)
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -55,8 +58,9 @@ async def recieve_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     transcription = transcribe_audio(
         bucket_name=bucket_name, file_name=file_path)
     user_id = update.message.from_user.id
-    t_id = add_transcription(user_id=user_id, transcription=transcription)
-    print(t_id)
+    t_id = str(uuid4())
+    add_transcript(user_id=user_id, transcript_text=transcription,
+                   transcript_id=t_id)
     keyboard = [
         [InlineKeyboardButton("Journal", callback_data="Journal:{t_id}".format(t_id=t_id)),
          InlineKeyboardButton("Create Todo List",
