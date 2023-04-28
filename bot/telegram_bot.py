@@ -4,7 +4,7 @@ from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHan
 from generate_response import generate_response
 from aws_utils import upload_to_s3, transcribe_audio, get_transcript, add_transcript
 from utils import root_dir, create_directory
-from langchain_utils import get_fixed_message
+from langchain_utils import get_fixed_message, get_todo_list
 import os
 from uuid import uuid4
 
@@ -30,6 +30,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     response = 'You did not journal'
     if callback_data_array[0] == "Journal":
         response = get_fixed_message(transcription)
+    if callback_data_array[0] == "Create Todo List":
+        response = get_todo_list(transcription)
     await query.edit_message_text(text=response)
 
 
@@ -59,6 +61,7 @@ async def recieve_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bucket_name=bucket_name, file_name=file_path)
     user_id = update.message.from_user.id
     t_id = str(uuid4())
+    print(transcription)
     add_transcript(user_id=user_id, transcript_text=transcription,
                    transcript_id=t_id)
     keyboard = [
