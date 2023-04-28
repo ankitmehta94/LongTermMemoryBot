@@ -76,3 +76,24 @@ def get_json_from_url(url):
         print("Timeout Error:", errt)
     except requests.exceptions.RequestException as err:
         print("Something went wrong:", err)
+
+
+def convert_string_to_json(input_string):
+    try:
+        # Try to parse input string as JSON
+        return json.loads(input_string)
+    except ValueError:
+        # Input string is not valid JSON, look for valid JSON substring
+        json_start = input_string.find("```")
+        json_end = input_string.rfind("```")
+        if json_start != -1 and json_end != -1:
+            json_string = input_string[json_start + 3:json_end]
+            try:
+                # Try to parse JSON substring
+                return json.loads(json_string)
+            except ValueError:
+                # JSON substring is not valid JSON
+                raise ValueError("No valid JSON found in input string")
+        else:
+            # No valid JSON substring found
+            raise ValueError("No valid JSON found in input string")

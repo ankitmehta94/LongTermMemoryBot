@@ -5,6 +5,7 @@ from generate_response import generate_response
 from aws_utils import upload_to_s3, transcribe_audio, get_transcript, add_transcript
 from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message, get_todo_list
+from message_utils import create_todo_list
 import os
 from uuid import uuid4
 
@@ -31,7 +32,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if callback_data_array[0] == "Journal":
         response = get_fixed_message(transcription)
     if callback_data_array[0] == "Create Todo List":
-        response = get_todo_list(transcription)
+        todo_json = get_todo_list(transcription)
+        response = create_todo_list(todo_array=todo_json)
     await query.edit_message_text(text=response)
 
 

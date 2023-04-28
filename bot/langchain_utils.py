@@ -1,17 +1,17 @@
 from langchain.chat_models import ChatOpenAI
-from langchain.output_parsers import StructuredOutputParser, ResponseSchema
+from langchain.output_parsers import StructuredOutputParser, ResponseSchema, CommaSeparatedListOutputParser
 from langchain.prompts import PromptTemplate, ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
+from utils import convert_string_to_json
 import os
 from dotenv.main import load_dotenv
 load_dotenv()
 
 chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0,
                   openai_api_key=os.environ.get('OPEN_AI_SECRET_KEY'))
-
 
 response_schemas = [
     ResponseSchema(name="todo", description="the todo created from the text"),
@@ -46,11 +46,11 @@ def get_fixed_message(user_input):
 def get_todo_list(user_input):
     messages = [
         SystemMessage(
-            content="Take the following text and return only an array of objects with the todo text with fixed grammar and puncuation (key todo) and estimate the time it would take to do the todo (key time), return nothing but the array"),
+            content="As a task management expert, I need you to extract todos from input text and provide a time estimate for each task. If no time estimate is provided for a task, please use your best guess to estimate how long it will take. Return a JSON array with objects containing the keys 'todo' and 'time'. The JSON array must follow a strict schema consisting of an array of objects. Each object must have a key 'todo' and a key 'time'. Please ensure that the tone of voice is professional and precise.Please ensure that the only response you provide is the JSON array, and no additional text. Thank you."),
         HumanMessage(
             content=user_input)
     ]
-    return chat(messages).content
+    return convert_string_to_json(chat(messages).content)
 
 
 def get_langchain_todo_list(user_input):
