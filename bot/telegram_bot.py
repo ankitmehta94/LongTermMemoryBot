@@ -2,10 +2,10 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
 from generate_response import generate_response
-from aws_utils import upload_to_s3, transcribe_audio, get_transcript, add_transcript
+from aws_utils import upload_to_s3, transcribe_audio, get_transcript, add_transcript, add_multiple_todos
 from utils import root_dir, create_directory
 from langchain_utils import get_fixed_message, get_todo_list
-from message_utils import create_todo_list
+from message_utils import create_todo_list, update_todo_list
 import os
 from uuid import uuid4
 
@@ -17,6 +17,21 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
+
+
+def create_todo_buttons(todo_array):
+    formatted_keyboard = []
+    for todo in todo_array:
+        id = todo['id']
+        single_line = [InlineKeyboardButton(todo['todo'], callback_data="Deeper:{todo_id}".format(todo_id=id)),
+                       InlineKeyboardButton("✅",
+                                            callback_data="Complete:{t_id}".format(t_id=id)),
+                       InlineKeyboardButton("🗓",
+                                            callback_data="Delete:{t_id}".format(t_id=id)),
+                       ]
+        formatted_keyboard.append(single_line)
+    print(formatted_keyboard)
+    return InlineKeyboardMarkup(formatted_keyboard)
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -31,10 +46,14 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     response = 'You did not journal'
     if callback_data_array[0] == "Journal":
         response = get_fixed_message(transcription)
+        await query.edit_message_text(text=response)
     if callback_data_array[0] == "Create Todo List":
-        todo_json = get_todo_list(transcription)
+        todo_json = update_todo_list(get_todo_list(transcription))
+        add_multiple_todos(todo_json)
         response = create_todo_list(todo_array=todo_json)
-    await query.edit_message_text(text=response)
+        reply_markup = create_todo_buttons(todo_array=todo_json)
+        await query.edit_message_text(text=response)
+        await context.bot.send_message(chat_id=update.effective_chat.id, reply_markup=reply_markup, text='Choose What to do with the todo list')
 
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
