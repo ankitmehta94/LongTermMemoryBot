@@ -23,14 +23,14 @@ def create_todo_buttons(todo_array):
     formatted_keyboard = []
     for todo in todo_array:
         id = todo['id']
-        single_line = [InlineKeyboardButton(todo['todo'], callback_data="Deeper:{todo_id}".format(todo_id=id)),
-                       InlineKeyboardButton("✅",
-                                            callback_data="Complete:{t_id}".format(t_id=id)),
-                       InlineKeyboardButton("🗓",
-                                            callback_data="Delete:{t_id}".format(t_id=id)),
-                       ]
-        formatted_keyboard.append(single_line)
-    print(formatted_keyboard)
+        todo_and_options = [[InlineKeyboardButton("{}  -  {}".format(todo['todo'], todo['time']), callback_data="Deeper:{todo_id}".format(todo_id=id)),
+                             ], [InlineKeyboardButton("✅",
+                                                      callback_data="Complete:{t_id}".format(t_id=id)),
+                            InlineKeyboardButton("❌",
+                                                 callback_data="Delete:{t_id}".format(t_id=id)),
+                            InlineKeyboardButton("🗓",
+                                                 callback_data="Delete:{t_id}".format(t_id=id)),]]
+        formatted_keyboard = formatted_keyboard+todo_and_options
     return InlineKeyboardMarkup(formatted_keyboard)
 
 
@@ -52,7 +52,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         add_multiple_todos(todo_json)
         response = create_todo_list(todo_array=todo_json)
         reply_markup = create_todo_buttons(todo_array=todo_json)
-        await query.edit_message_text(text=response)
         await context.bot.send_message(chat_id=update.effective_chat.id, reply_markup=reply_markup, text='Choose What to do with the todo list')
 
 
