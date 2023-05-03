@@ -22,6 +22,31 @@ def connect_to_dynamo_table(table_name):
 
 
 transcription_table = connect_to_dynamo_table('Transcriptions')
+todo_table = connect_to_dynamo_table('TodoList')
+
+
+def add_multiple_todos(todos):
+    """
+    Add multiple todos to the DynamoDB table
+
+    :param todos: List of dictionaries containing todo items
+                  with keys id, todo, time, and timecreated
+    """
+    with todo_table.batch_writer() as batch:
+        for todo_item in todos:
+            batch.put_item(Item=todo_item)
+
+
+def get_todo(todo_id):
+    """
+    Get a todo from a DynamoDB table using an id
+    """
+    response = todo_table.get_item(Key={'id': todo_id})
+    transcript = response.get('Item', None)
+    if transcript:
+        return transcript.get('todo')
+    else:
+        return None
 
 
 def add_transcript(transcript_id, transcript_text, user_id):
@@ -122,5 +147,4 @@ def transcribe_audio(bucket_name, file_name):
         print('Print EXception in get_object')
         print(e)
         return None
-    print('Where 3')
     return transcript
