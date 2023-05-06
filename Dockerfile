@@ -1,6 +1,7 @@
-FROM python:3.9
+FROM huggingface/transformers-cpu
 
 COPY requirements.txt ./requirements.txt
+COPY .env .env
 RUN pip install -r requirements.txt
 
 COPY bot ./bot
