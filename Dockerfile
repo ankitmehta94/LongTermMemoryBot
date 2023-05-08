@@ -1,4 +1,4 @@
-FROM pytorch/pytorch
+FROM python:3.9
 
 COPY requirements.txt ./requirements.txt
 COPY .env .env
