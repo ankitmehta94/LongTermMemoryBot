@@ -1,4 +1,4 @@
-FROM huggingface/transformers-cpu
+FROM pytorch/pytorch
 
 COPY requirements.txt ./requirements.txt
 COPY .env .env
