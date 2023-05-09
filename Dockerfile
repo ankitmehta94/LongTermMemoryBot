@@ -5,7 +5,7 @@ COPY .env .env
 
 RUN /usr/local/bin/python -m pip install --upgrade pip
 
-RUN pip install -r requirements.txt
+RUN TMPDIR=/var/tmp pip install --cache-dir=$TMPDIR -r requirements.txt
 
 COPY bot ./bot
 
