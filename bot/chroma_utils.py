@@ -19,16 +19,16 @@ collection_json = {
 chroma_client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet",
                                          persist_directory=collection_json["vector_database_directory"]))
 sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2")
+    model_name="all-MiniLM-L6-v2",)
 
 
 embeddings_model = SentenceTransformer('all-MiniLM-L6-v2')
 # # currectly using default embedings function all-MiniLM-L6-v2
 notes_collection = chroma_client.get_or_create_collection(
-    name=collection_json['notes_collection'], embedding_function=sentence_transformer_ef)
+    name=collection_json['notes_collection'])
 
 logs_collection = chroma_client.get_or_create_collection(
-    name=collection_json['logs_collection'], embedding_function=sentence_transformer_ef)
+    name=collection_json['logs_collection'])
 
 
 def summarize_memories(memories):
